@@ -116,7 +116,7 @@ class DataScraper:
         return results
 def main(search_query: str) -> List[dict]:
     scraper = DataScraper()
-    with SB(uc=True, test=True) as sb:
+    with SB(uc=True, test=False,Headless=True) as sb:
         daraz_results = scraper.scrape_daraz(search_query,sb)
         smartdoko_results = scraper.scrape_smartdoko(search_query,sb)
         sastodeal_results = scraper.scrape_sastodeal(search_query,sb)
