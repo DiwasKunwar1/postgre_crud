@@ -8,3 +8,4 @@ python_jose==3.3.0
 seleniumbase==4.23.7
 SQLAlchemy==2.0.27
 uvicorn==0.27.1
+psycopg2-binary
