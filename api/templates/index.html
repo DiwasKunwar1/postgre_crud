@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+</head>
+<body>
+    <h1>User Authentication</h1>
+    <h2>Register</h2>
+    <form id="register-form">
+        <label for="register-username">Username:</label><br>
+        <input type="text" id="register-username" name="username" required><br>
+        <label for="register-password">Password:</label><br>
+        <input type="password" id="register-password" name="password" required><br>
+        <button type="submit">Register</button>
+    </form>
+
+    <h2>Login</h2>
+    <form id="login-form">
+        <label for="login-username">Username:</label><br>
+        <input type="text" id="login-username" name="username" required><br>
+        <label for="login-password">Password:</label><br>
+        <input type="password" id="login-password" name="password" required><br>
+        <button type="submit">Login</button>
+    </form>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = {
+                username: document.getElementById('register-username').value,
+                password: document.getElementById('register-password').value
+            };
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            alert(data.message);
+        });
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const formData = {
+        username: document.getElementById('login-username').value,
+        password: document.getElementById('login-password').value
+    };
+    console.log(formData); // Log formData to console
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        if (response.ok) {
+            window.location.href = '/home';
+            alert('Login successful!');
+
+        } else {
+            alert('Error: Login unsuccessful');
+        }
+    } catch (error) {
+        alert('Error catch: ' + error.message);
+    }
+});
+
+    </script>
+</body>
+</html>

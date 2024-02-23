@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Successful</title>
+    <meta http-equiv="refresh" content="url=/home">
+</head>
+<body>
+    <h1>Login Successful!</h1>
+    <p>Welcome, {{ username }}!</p>
+
+    <h2>News Articles</h2>
+    <button id="fetchNewsBtn">Fetch News</button>
+    <div id="newsContainer"></div>
+
+   <!-- Your HTML form with input field and button -->
+<form onsubmit="fetchPrices(event)">
+    <input type="text" id="searchInput" placeholder="Enter search query">
+    <button type="submit">Search</button>
+</form>
+
+<!-- Container to display fetched prices -->
+<div id="priceContainer"></div>
+
+    <!-- Update Password Section -->
+    <h2>Update Password</h2>
+    <input type="password" id="newPasswordInput" placeholder="New Password">
+    <button id="updatePasswordBtn">Update Password</button>
+
+    <!-- Logout Section -->
+    <h2>Logout</h2>
+    <button id="logoutBtn">Logout</button>
+
+    <script>
+        // Function to fetch news articles
+       // Function to fetch news articles and display in a new window
+function fetchNews() {
+    fetch('/scrape')
+        .then(response => response.json())
+        .then(articles => {
+            const newsWindow = window.open("", "_blank");
+            newsWindow.document.write('<html><head><title>News Articles</title></head><body>');
+            newsWindow.document.write('<h1>News Articles</h1>');
+            articles.forEach(article => {
+                newsWindow.document.write(`<h3>${article.title}</h3>`);
+                newsWindow.document.write(`<p>${article.summary}</p>`);
+                newsWindow.document.write(`<a href="${article.link}" target="_blank">Read more</a>`);
+                newsWindow.document.write('<hr>');
+            });
+            newsWindow.document.write('</body></html>');
+            newsWindow.document.close();
+        })
+        .catch(error => console.error('Error fetching news:', error));
+}
+
+// Function to fetch product prices and display in a new window
+// frontend.js
+
+function fetchPrices(event) {
+    event.preventDefault(); // Prevent form submission
+
+    const searchQuery = document.getElementById('searchInput').value;
+    fetch(`/price?search_query=${searchQuery}`)
+        .then(response => response.json())
+        .then(products => {
+            // Open a new tab
+            const newTab = window.open('');
+            newTab.document.write('<h1>Search Results</h1>');
+
+            // Display products in the new tab
+            products.forEach(product => {
+                newTab.document.write(`
+                    <div>
+                        <h3>${product.title}</h3>
+                        <p>Price: ${product.price}</p>
+                        <img src="${product.image}" alt="Product Image">
+                        <a href="${product.link}" target="_blank">View Product</a>
+                        <p>Site: ${product.site}</p>
+                        <hr>
+                    </div>
+                `);
+            });
+        })
+        .catch(error => console.error('Error fetching prices:', error));
+}
+
+        // Function to update password
+        function updatePassword() {
+            const newPassword = document.getElementById('newPasswordInput').value;
+            fetch('/users/update_password', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                },
+                body: JSON.stringify({ new_password: newPassword })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Password updated successfully');
+                } else {
+                    throw new Error('Failed to update password');
+                }
+            })
+            .catch(error => console.error('Error updating password:', error));
+        }
+
+        // Function to logout
+        function logout() {
+            fetch('/logout')
+                .then(() => {
+                    alert('Logged out successfully');
+                    localStorage.removeItem('accessToken');
+                    window.location.href = '/'; // Redirect to login page
+                })
+                .catch(error => console.error('Error logging out:', error));
+        }
+
+        // Event listener for the fetch news button
+        document.getElementById('fetchNewsBtn').addEventListener('click', fetchNews);
+
+        // Event listener for the fetch price button
+        document.getElementById('searchForm').addEventListener('submit', fetchPrices);
+
+
+        // Event listener for the update password button
+        document.getElementById('updatePasswordBtn').addEventListener('click', updatePassword);
+
+        // Event listener for the logout button
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+    </script>
+</body>
+</html>
